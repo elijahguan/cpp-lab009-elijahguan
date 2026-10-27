@@ -34,21 +34,35 @@ bool MaxHeap::contains(int value) const {
 }
 
 void MaxHeap::push(int value) {
-    (void)value;
-    throw std::logic_error("Student implementation required: push");
+    data_.push_back(value);
+    heapifyUp(data_.size() - 1);
 }
 
 int MaxHeap::pop() {
-    throw std::logic_error("Student implementation required: pop");
+    if (empty()) {
+        throw std::logic_error("Heap is empty");
+    }
+    int value = data_.front();
+    data_.front() = data_.back();
+    data_.pop_back();
+    heapifyDown(0);
+    return value;
 }
 
 void MaxHeap::buildHeap(const std::vector<int>& values) {
-    (void)values;
-    throw std::logic_error("Student implementation required: buildHeap");
+    data_ = values;
+    for (int i = data_.size() / 2 - 1; i >= 0; --i) {
+        heapifyDown(i);
+    }
 }
 
 std::vector<int> MaxHeap::heapSort() {
-    throw std::logic_error("Student implementation required: heapSort");
+    std::vector<int> sorted;
+    while (!empty()) {
+        sorted.push_back(pop());
+    }
+    std::reverse(sorted.begin(), sorted.end());
+    return sorted;
 }
 
 std::vector<int> MaxHeap::toVector() const {
@@ -71,13 +85,30 @@ std::size_t MaxHeap::rightChildIndex(std::size_t index) {
 }
 
 void MaxHeap::heapifyUp(std::size_t index) {
-    (void)index;
-    throw std::logic_error("Student implementation required: heapifyUp");
+    if (index == 0) {
+        return;
+    }
+    std::size_t parent = parentIndex(index);
+    if (data_[parent] < data_[index]) {
+        swap(data_[parent], data_[index]);
+        heapifyUp(parent);
+    }
 }
 
 void MaxHeap::heapifyDown(std::size_t index) {
-    (void)index;
-    throw std::logic_error("Student implementation required: heapifyDown");
+    std::size_t left = leftChildIndex(index);
+    std::size_t right = rightChildIndex(index);
+    std::size_t largest = index;
+    if (left < data_.size() && data_[left] > data_[largest]) {
+        largest = left;
+    }
+    if (right < data_.size() && data_[right] > data_[largest]) {
+        largest = right;
+    }
+    if (largest != index) {
+        swap(data_[index], data_[largest]);
+        heapifyDown(largest);
+    }
 }
 
 void MaxHeap::swap(int& a, int& b) {
